@@ -10,36 +10,36 @@ app = FastAPI()
 
 database.create_db_and_tables()
 
-@app.post("/matriz/criar", response_model=schemas.MatrizRead)
-def criar_matriz(payload: schemas.MatrizCreate, db: Session = Depends(database.get_db)):
+@app.post("/matrix/create", response_model=schemas.MatrixRead)
+def create_matrix(payload: schemas.MatrixCreate, db: Session = Depends(database.get_db)):
     # Validar se é matriz retangular
-    linhas = len(payload.dados)
-    colunas = len(payload.dados[0])
-    for linha in payload.dados:
-        if linhas != colunas:
-            raise HTTPException(status_code=400, detail="Todas as linhas devem ter o mesmo número de colunas")
+    lines = len(payload.data)
+    columns = len(payload.data[0])
+    for linha in payload.data:
+        if lines != columns:
+            raise HTTPException(status_code=400, detail="Line and Columns must be the same length")
 
     # Salvar em JSON
-    nova_matriz = models.Matriz(nome=payload.nome, dados=json.dumps(payload.dados))
-    db.add(nova_matriz)
+    new_matrix = models.Matrix(name=payload.name, dados=json.dumps(payload.data))
+    db.add(new_matrix)
     db.commit()
-    db.refresh(nova_matriz)
-    nova_matriz.dados = json.loads(nova_matriz.dados)  # Converter de volta para lista
-    return nova_matriz
+    db.refresh(new_matrix)
+    new_matrix.data = json.loads(new_matrix.data)  # convertting JSON string back to list
+    return new_matrix
     
     
-@app.get("/matriz/{matriz_id}", response_model=schemas.MatrizRead)
-def obter_matriz(matriz_id: int, db: Session = Depends(database.get_db)):
-    matriz = db.query(models.Matriz).filter(models.Matriz.id == matriz_id).first()
-    if not matriz:
-        raise HTTPException(status_code=404, detail="Matriz não encontrada")
-    matriz.dados = json.loads(matriz.dados)  # Converter de volta para lista
-    return matriz
+@app.get("/matrix/{matrix_id}", response_model=schemas.MatrixRead)
+def get_matrix(matrix_id: int, db: Session = Depends(database.get_db)):
+    matrix = db.query(models.Matrix).filter(models.Matrix.id == matrix_id).first()
+    if not matrix:
+        raise HTTPException(status_code=404, detail=f"Matrix with id {matrix_id} not found")
+    matrix.data = json.loads(matrix.data)  # convertting JSON string back to list
+    return matrix
 
-@app.get("/matriz", response_model=List[schemas.MatrizRead])
-def listar_matrizes(db: Session = Depends(database.get_db)):
-    matrizes = db.query(models.Matriz).all()
-    for matriz in matrizes:
-        matriz.dados = json.loads(matriz.dados)
+@app.get("/matrices", response_model=List[schemas.MatrixRead])
+def list_matrices(skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)):
+    matrices = db.query(models.Matrix).offset(skip).limit(limit).all()
+    for matrix in matrices:
+        matrix.data = json.loads(matrix.data)
 
-    return matrizes
+    return matrices

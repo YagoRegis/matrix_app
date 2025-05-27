@@ -5,10 +5,10 @@ from datetime import datetime
 Base = declarative_base()
 
 
-class Matriz(Base):
-    __tablename__ = "matrizes"
+class Matrix(Base):
+    __tablename__ = "matrices"
 
     id = Column(Integer, primary_key=True, index=True)
-    nome = Column(String, index=True)
-    dados = Column(Text)  # JSON com a matriz
-    data_criacao = Column(DateTime, default=datetime.utcnow)
+    name = Column(String, index=True)
+    data = Column(Text)  # JSON com a matriz
+    created_at = Column(DateTime, default=datetime.utcnow)

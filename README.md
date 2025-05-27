@@ -18,7 +18,7 @@ This project is a RESTful API built with [FastAPI](https://fastapi.tiangolo.com/
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/your-username/matrix_app.git
+git clone https://github.com/YagoRegis/matrix_app.git
 cd matrix_app
 
 # Create a virtual environment (optional)

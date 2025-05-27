@@ -2,16 +2,16 @@ from pydantic import BaseModel
 from typing import List, Union
 from datetime import datetime
 
-class MatrizBase(BaseModel):
-    nome: str
-    dados: List[List[Union[int, float]]]
+class MatrixBase(BaseModel):
+    name: str
+    data: List[List[Union[int, float]]]
 
-class MatrizCreate(MatrizBase):
+class MatrixCreate(MatrixBase):
     pass
 
-class MatrizRead(MatrizBase):
+class MatrixRead(MatrixBase):
     id: int
-    data_criacao: datetime
+    created_at: datetime
 
     class Config:
         from_attributes = True
