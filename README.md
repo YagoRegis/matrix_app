@@ -18,8 +18,8 @@ This project is a RESTful API built with [FastAPI](https://fastapi.tiangolo.com/
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git clone https://github.com/your-username/matrix_app.git
+cd matrix_app
 
 # Create a virtual environment (optional)
 python -m venv venv
@@ -34,7 +34,7 @@ pip install -r requirements.txt
 ## ▶️ Running the API
 
 ```bash
-uvicorn main:app --reload
+uvicorn src.main:app --reload # --log-level debug
 ```
 
 Open your browser at: [http://localhost:8000/docs](http://localhost:8000/docs) for the Swagger UI interactive documentation.
@@ -94,7 +94,7 @@ Open your browser at: [http://localhost:8000/docs](http://localhost:8000/docs) f
 
 ## 🧑‍💻 Author
 
-Developed by [Your Name](https://github.com/your-username)
+Developed by [Yago Regis Santos Rodrigues](https://github.com/YagoRegis)
 
 ---
 
