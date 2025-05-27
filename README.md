@@ -44,12 +44,12 @@ Open your browser at: [http://localhost:8000/docs](http://localhost:8000/docs) f
 ## 🧪 Example Usage
 
 ### 🔹 Create a Matrix
-`POST /matriz/criar`
+`POST /matrix/create`
 
 ```json
 {
-  "nome": "Matrix A",
-  "dados": [[1, 2], [3, 4]]
+  "name": "Matrix A",
+  "data": [[1, 2], [3, 4]]
 }
 ```
 
@@ -58,9 +58,9 @@ Open your browser at: [http://localhost:8000/docs](http://localhost:8000/docs) f
 ```json
 {
   "id": 1,
-  "nome": "Matrix A",
-  "dados": [[1, 2], [3, 4]],
-  "data_criacao": "2025-05-24T14:00:00"
+  "name": "Matrix A",
+  "data": [[1, 2], [3, 4]],
+  "created_at": "2025-05-24T14:00:00"
 }
 ```
 
