@@ -20,7 +20,7 @@ def create_matrix(payload: schemas.MatrixCreate, db: Session = Depends(database.
             raise HTTPException(status_code=400, detail="Line and Columns must be the same length")
 
     # Salvar em JSON
-    new_matrix = models.Matrix(name=payload.name, dados=json.dumps(payload.data))
+    new_matrix = models.Matrix(name=payload.name, data=json.dumps(payload.data))
     db.add(new_matrix)
     db.commit()
     db.refresh(new_matrix)
