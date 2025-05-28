@@ -11,8 +11,10 @@ engine = create_engine(
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 def create_db_and_tables():
     Base.metadata.create_all(bind=engine)
+
 
 # Função auxiliar para obter uma sessão do banco
 def get_db():
