@@ -84,7 +84,7 @@ Open your browser at: [http://localhost:8000/docs](http://localhost:8000/docs) f
 
 ## 🛠️ Future Features
 
-- [ ] Determinant calculation
+- [x] Determinant calculation
 - [ ] Matrix transpose
 - [ ] Matrix multiplication
 - [x] List and retrieve matrix history
