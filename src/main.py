@@ -1,10 +1,9 @@
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List
-import numpy as np
-import json
-import traceback
-from . import database, models, schemas, utils, operations
+
+from . import database, matrix_operations, schemas, utils, repository
+from .exceptions import NotFoundError
 
 app = FastAPI()
 
@@ -20,25 +19,22 @@ def create_matrix(
             status_code=400, detail="Line and Columns must be the same length"
         )
 
-    # Salvar em JSON
-    new_matrix = models.Matrix(name=payload.name, data=json.dumps(payload.data))
-    db.add(new_matrix)
-    db.commit()
-    db.refresh(new_matrix)
-    new_matrix.data = json.loads(
-        new_matrix.data
-    )  # convertting JSON string back to list
+    new_matrix = repository.SQLAlchemyMatrixRepository(session=db).save(item=payload)
+    if not new_matrix:
+        raise HTTPException(
+            status_code=500, detail="Failed to create matrix. Please try again."
+        )
     return new_matrix
 
 
 @app.get("/matrix/{matrix_id}", response_model=schemas.MatrixRead)
 def get_matrix(matrix_id: int, db: Session = Depends(database.get_db)):
-    matrix = db.query(models.Matrix).filter(models.Matrix.id == matrix_id).first()
-    if not matrix:
+    try:
+        matrix = repository.SQLAlchemyMatrixRepository(session=db).get(id=matrix_id)
+    except NotFoundError:
         raise HTTPException(
             status_code=404, detail=f"Matrix with id {matrix_id} not found"
         )
-    matrix.data = json.loads(matrix.data)  # convertting JSON string back to list
     return matrix
 
 
@@ -46,9 +42,9 @@ def get_matrix(matrix_id: int, db: Session = Depends(database.get_db)):
 def list_matrices(
     skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)
 ):
-    matrices = db.query(models.Matrix).offset(skip).limit(limit).all()
-    for matrix in matrices:
-        matrix.data = json.loads(matrix.data)
+    matrices = repository.SQLAlchemyMatrixRepository(session=db).list(
+        skip=skip, limit=limit
+    )
 
     return matrices
 
@@ -63,14 +59,14 @@ def calculate_determinant(
             status_code=400, detail="At least one matrix input is required"
         )
     elif isinstance(matrix_input, int):
-        matrix = (
-            db.query(models.Matrix)
-            .filter(models.Matrix.id == matrix_input)
-            .first()
-        )
-        if not matrix:
-            raise HTTPException(status_code=404, detail="Matrix not found")
-        matrix_data = json.loads(matrix.data) 
+        try:
+            matrix_data = repository.SQLAlchemyMatrixRepository(session=db).get(
+                id=matrix_input
+            ).data
+        except NotFoundError:
+            raise HTTPException(
+                status_code=404, detail=f"Matrix with id {matrix_input} not found"
+            )
     elif isinstance(matrix_input, list):
         matrix_data = matrix_input
 
@@ -79,5 +75,5 @@ def calculate_determinant(
             status_code=400, detail="Line and Columns must be the same length"
         )
 
-    determinant = operations.calc_determinant(matrix_data)
+    determinant = matrix_operations.calc_determinant(matrix_data)
     return schemas.MatrixOperationResult(result=determinant)
