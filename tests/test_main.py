@@ -75,6 +75,17 @@ def test_calculate_determinant_by_matrix(client: TestClient):
     data = response.json()
     assert data["result"] == -2.0  # Determinant of [[1, 2], [3, 4]] is -2
 
+def test_calculate_determinant_by_matrix_b(client: TestClient):
+    payload = {
+        "matrix_b": [[1, 2], [3, 4]]
+    }
+    
+    response = client.post("/matrix/determinant", json=payload)
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["result"] == -2.0  # Determinant of [[1, 2], [3, 4]] is -2
+
 def test_calculate_determinant_wrong_matrix(client: TestClient):
     payload = {
         "matrix_a": [[1, 2, 3], [3, 4]]
@@ -92,7 +103,6 @@ def test_calculate_determinant_empty_matrix(client: TestClient):
     response = client.post("/matrix/determinant", json=payload)
     
     assert response.status_code == 400
-    data = response.json()
     assert response.json() == {"detail": "At least one matrix input is required"}
 
 def test_calculate_determinant_by_matrix_id(client: TestClient):
@@ -106,6 +116,36 @@ def test_calculate_determinant_by_matrix_id(client: TestClient):
     print(created)
     payload = {
         "matrix_id_a": created["id"]  # Use the created matrix ID
+    }
+    
+    response = client.post("/matrix/determinant", json=payload)
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["result"] == -2.0  # Determinant of [[1, 2], [3, 4]] is -2
+
+def test_calculate_determinant_by_matrix_id_not_found(client: TestClient):
+    payload = {
+        "matrix_id_a": 77777  # we assume this ID does not exist
+    }
+    
+    response = client.post("/matrix/determinant", json=payload)
+    
+    assert response.status_code == 404
+    data = response.json()
+    assert response.json() == {"detail": "Matrix with id 77777 not found"}
+
+def test_calculate_determinant_by_matrix_id_b(client: TestClient):
+    # Create
+    payload = {
+        "name": "Test Matrix",
+        "data": [[1, 2], [3, 4]]
+    }
+    create_response = client.post("/matrix/create", json=payload)
+    created = create_response.json()
+    print(created)
+    payload = {
+        "matrix_id_b": created["id"]  # Use the created matrix ID
     }
     
     response = client.post("/matrix/determinant", json=payload)

@@ -20,10 +20,6 @@ def create_matrix(
         )
 
     new_matrix = repository.SQLAlchemyMatrixRepository(session=db).save(item=payload)
-    if not new_matrix:
-        raise HTTPException(
-            status_code=500, detail="Failed to create matrix. Please try again."
-        )
     return new_matrix
 
 
