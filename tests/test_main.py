@@ -203,3 +203,56 @@ def test_calculate_tranpose_by_matrix_a(client: TestClient):
     assert response.status_code == 200
     data = response.json()
     assert data["result"] == [[1, 3], [2, 4]]  # Transpose of [[1, 2], [3, 4]] is [[1, 3], [2, 4]]
+
+
+def test_calculate_multiply_matrix_a_b(client: TestClient):
+    payload = {
+        "matrix_a": [[1, 0], [0, 1]],  # Use the created matrix ID
+        "matrix_b": [[4, 1], [2, 2]]  # Use the created matrix ID
+    }
+    
+    response = client.post("/matrix/multiply", json=payload)
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["result"] == [[4, 1], [2, 2]] # Multiplication of identity matrix with another matrix should yield the same matrix
+
+def test_calculate_multiply_empty_matrix(client: TestClient):
+    payload = {}
+    
+    response = client.post("/matrix/multiply", json=payload)
+    
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Both matrix inputs are required"}
+
+def test_calculate_multiply_nonexisting_id_matrix_a(client: TestClient):
+    payload = {
+        "matrix_id_a": 9999,  # Assuming this ID does not exist
+        "matrix_id_b": 8888   # Assuming this ID does not exist
+    }
+    
+    response = client.post("/matrix/multiply", json=payload)
+    
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Matrix with id 9999 not found"}
+
+def test_calculate_multiply_mismatch_error_matrix_a(client: TestClient):
+    payload = {
+        "matrix_a": [[1, 0], [0, 1]],  # Assuming this ID does not exist
+        "matrix_b": [[1, 0], [0, 1, 2]]   # Assuming this ID does not exist
+    }
+    
+    response = client.post("/matrix/multiply", json=payload)
+    
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Line and Columns must be the same length"}
+
+def test_calculate_transpose_mismatch_error_matrix_a(client: TestClient):
+    payload = {
+        "matrix_b": [[1, 0], [0, 1, 2]]   # Assuming this ID does not exist
+    }
+    
+    response = client.post("/matrix/transpose", json=payload)
+    
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Line and Columns must be the same length"}

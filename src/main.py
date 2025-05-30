@@ -95,5 +95,38 @@ def calculate_transpose(
     elif isinstance(matrix_input, list):
         matrix_data = matrix_input
 
+    if not utils.is_square(matrix=matrix_data):
+        raise HTTPException(
+            status_code=400, detail="Line and Columns must be the same length"
+        )
+
     transpose = matrix_operations.calc_transpose(matrix_data)
     return schemas.MatrixOperationResult(result=transpose)
+
+@app.post("/matrix/multiply", response_model=schemas.MatrixOperationResult)
+def calculate_multiply(
+    payload: schemas.MatrixOperation, db: Session = Depends(database.get_db)
+):
+    matrix_lst = utils.select_matrix_input(payload=payload, n=2)
+    
+    for i in range(len(matrix_lst)):
+        if not matrix_lst[i]:
+            raise HTTPException(
+                status_code=400, detail="Both matrix inputs are required"
+            )
+        
+        if isinstance(matrix_lst[i], int):
+            try:
+                matrix_lst[i] = repository.SQLAlchemyMatrixRepository(session=db).get(id=matrix_lst[i]).data
+            except NotFoundError:
+                raise HTTPException(
+                    status_code=404, detail=f"Matrix with id {matrix_lst[i]} not found"
+                )
+        
+        if not utils.is_square(matrix=matrix_lst[i]):
+            raise HTTPException(
+                status_code=400, detail="Line and Columns must be the same length"
+            )
+
+    result = matrix_operations.calc_multiply(matrix_lst[0], matrix_lst[1])
+    return schemas.MatrixOperationResult(result=result)
