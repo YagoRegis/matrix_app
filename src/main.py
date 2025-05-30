@@ -73,3 +73,27 @@ def calculate_determinant(
 
     determinant = matrix_operations.calc_determinant(matrix_data)
     return schemas.MatrixOperationResult(result=determinant)
+
+@app.post("/matrix/transpose", response_model=schemas.MatrixOperationResult)
+def calculate_transpose(
+    payload: schemas.MatrixOperation, db: Session = Depends(database.get_db)
+):
+    matrix_input = utils.select_matrix_input(payload=payload)
+    if not matrix_input:
+        raise HTTPException(
+            status_code=400, detail="At least one matrix input is required"
+        )
+    elif isinstance(matrix_input, int):
+        try:
+            matrix_data = repository.SQLAlchemyMatrixRepository(session=db).get(
+                id=matrix_input
+            ).data
+        except NotFoundError:
+            raise HTTPException(
+                status_code=404, detail=f"Matrix with id {matrix_input} not found"
+            )
+    elif isinstance(matrix_input, list):
+        matrix_data = matrix_input
+
+    transpose = matrix_operations.calc_transpose(matrix_data)
+    return schemas.MatrixOperationResult(result=transpose)

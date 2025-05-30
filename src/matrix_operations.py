@@ -13,3 +13,17 @@ def calc_determinant(matrix: List[List[Union[int, float]]]) -> float:
     """
     np_matrix = np.array(matrix)
     return round(float(np.linalg.det(np_matrix)), 2)
+
+def calc_transpose(matrix: List[List[Union[int, float]]]) -> List[List[Union[int, float]]]:
+    """
+    Calculate the transpose of a matrix.
+    
+    Args:
+        matrix (List[List[Union[int, float]]]): A matrix represented as a list of lists.
+        
+    Returns:
+        List[List[Union[int, float]]]: The transposed matrix.
+    """
+    np_matrix = np.array(matrix)
+    transposed = np_matrix.T
+    return transposed.tolist()
