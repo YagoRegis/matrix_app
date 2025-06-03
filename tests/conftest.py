@@ -16,11 +16,11 @@ engine = create_engine(
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Criação única das tabelas
+# Create the database tables
 models.Base.metadata.create_all(bind=engine)
 
 
-# Override da dependência
+# Override db dependency for testing
 def override_get_db():
     db = TestingSessionLocal()
     try:

@@ -238,8 +238,8 @@ def test_calculate_multiply_nonexisting_id_matrix_a(client: TestClient):
 
 def test_calculate_multiply_mismatch_error_matrix_a(client: TestClient):
     payload = {
-        "matrix_a": [[1, 0], [0, 1]],  # Assuming this ID does not exist
-        "matrix_b": [[1, 0], [0, 1, 2]]   # Assuming this ID does not exist
+        "matrix_a": [[1, 0], [0, 1]],
+        "matrix_b": [[1, 0], [0, 1, 2]]
     }
     
     response = client.post("/matrix/multiply", json=payload)
@@ -247,9 +247,9 @@ def test_calculate_multiply_mismatch_error_matrix_a(client: TestClient):
     assert response.status_code == 400
     assert response.json() == {"detail": "Line and Columns must be the same length"}
 
-def test_calculate_transpose_mismatch_error_matrix_a(client: TestClient):
+def test_calculate_transpose_mismatch_error_matrix_b(client: TestClient):
     payload = {
-        "matrix_b": [[1, 0], [0, 1, 2]]   # Assuming this ID does not exist
+        "matrix_b": [[1, 0], [0, 1, 2]]
     }
     
     response = client.post("/matrix/transpose", json=payload)
